@@ -1,4 +1,5 @@
 package com.company;
+import java.util.Scanner;
 
 public class ComplexMatrix {
     private final int rows;
@@ -44,6 +45,16 @@ public class ComplexMatrix {
                 System.out.print(this.matrix[i][j].algebraic() + "  ");
             }
             System.out.println();
+        }
+    }
+
+    public void fillMatrix() {
+        System.out.println("Fill matrix with " + rows + " rows and " + cols + " columns");
+        Scanner in = new Scanner(System.in);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                this.matrix[i][j] = new ComplexNumber(in.nextInt(), in.nextInt());
+            }
         }
     }
 
