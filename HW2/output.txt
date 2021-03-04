@@ -1,0 +1,5 @@
+A - 3 times
+B - 3 times
+C - 3 times
+D - 4 times
+X - 6 times
