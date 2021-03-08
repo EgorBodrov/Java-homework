@@ -1,9 +1,13 @@
 package com.company;
-import java.lang.Math;
 
 public class ComplexNumber {
     private double real_num;
     private double imaginary_unit;
+
+    public ComplexNumber() {
+        this.real_num = 0;
+        this.imaginary_unit = 0;
+    }
 
     public ComplexNumber(double rn, double iu) {
         this.real_num = rn;
@@ -23,32 +27,39 @@ public class ComplexNumber {
         return this.imaginary_unit;
     }
 
-    public static ComplexNumber sum(ComplexNumber first, ComplexNumber second) {
-        return new ComplexNumber(first.getRn() + second.getRn(), first.getIu() + second.getIu());
+    public void sum(ComplexNumber source) {
+        this.real_num += source.getRn();
+        this.imaginary_unit += source.getIu();
     }
 
-    public static ComplexNumber sub(ComplexNumber first, ComplexNumber second) {
-        return new ComplexNumber(first.getRn() - second.getRn(), first.getIu() - second.getIu());
+    public void sub(ComplexNumber source) {
+        this.real_num -= source.getRn();
+        this.imaginary_unit -= source.getIu();
     }
 
-    public static ComplexNumber mul(ComplexNumber first, ComplexNumber second) {
-        return new ComplexNumber(first.getRn() * second.getRn() - first.getIu() * second.getIu(),
-                first.getRn() * second.getIu() + first.getIu() * second.getRn());
+    public void mul(ComplexNumber source) {
+        this.real_num = this.getRn() * source.getRn() - this.getIu() * source.getIu();
+        this.imaginary_unit = this.getRn() * source.getIu() + this.getIu() * source.getRn();
     }
 
-    public static ComplexNumber div(ComplexNumber first, ComplexNumber second) {
-        double den = second.getRn() * second.getRn() + second.getIu() * second.getIu();
-        double num1 = first.getRn() * second.getRn() + first.getIu() * second.getIu();
-        double num2 = second.getRn() * first.getIu() - first.getRn() * second.getIu();
-        return new ComplexNumber(num1 / den, num2 / den);
+    public void div(ComplexNumber source) {
+        double den = source.getRn() * source.getRn() + source.getIu() * source.getIu();
+        double num1 = this.getRn() * source.getRn() + this.getIu() * source.getIu();
+        double num2 = source.getRn() * this.getIu() - this.getRn() * source.getIu();
+        this.real_num = num1 / den;
+        this.imaginary_unit = num2 / den;
     }
 
-    public static double abs(ComplexNumber source) {
+    public double abs(ComplexNumber source) {
         return Math.sqrt(source.getRn() * source.getRn() + source.getIu() * source.getIu());
     }
 
     public String algebraic() {
-        return ("(" + this.getRn() + " + " + this.getIu() + " * i)");
+        if (this.imaginary_unit > 0) {
+            return ("(" + this.getRn() + " + " + this.getIu() + " * i)");
+        } else {
+            return ("( " + this.getRn() + " )");
+        }
     }
 
     public String trigonometric() {

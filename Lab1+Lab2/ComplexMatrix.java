@@ -17,6 +17,17 @@ public class ComplexMatrix {
         }
     }
 
+    public ComplexMatrix(int[][] source) {
+        this.rows = source.length;
+        this.cols = source[0].length;
+        this.matrix = new ComplexNumber[this.rows][this.cols];
+        for (int i = 0; i < this.rows; i++) {
+            for (int j = 0; j < this.cols; j++) {
+                matrix[i][j] = new ComplexNumber(source[i][j]);
+            }
+        }
+    }
+
     public ComplexMatrix(ComplexNumber[][] source) {
         this.rows = source.length;
         this.cols = source[0].length;
@@ -46,6 +57,7 @@ public class ComplexMatrix {
             }
             System.out.println();
         }
+        System.out.println();
     }
 
     public void fillMatrix() {
@@ -58,58 +70,53 @@ public class ComplexMatrix {
         }
     }
 
-    public static ComplexMatrix sum(ComplexMatrix first, ComplexMatrix second) throws DifferentShape {
-        if (first.getRows() == second.getRows() && first.getCols() == second.getCols()) {
-            ComplexMatrix result = new ComplexMatrix(first.getRows(), second.getCols());
-            for (int i = 0; i < result.getRows(); i++) {
-                for (int j = 0; j < result.getCols(); j++) {
-                    result.matrix[i][j] = ComplexNumber.sum(first.getValue(i, j), second.getValue(i, j));
+    public void sum(ComplexMatrix source) throws DifferentShape {
+        if (this.getRows() == source.getRows() && this.getCols() == source.getCols()) {
+            for (int i = 0; i < source.getRows(); i++) {
+                for (int j = 0; j < source.getCols(); j++) {
+                    this.matrix[i][j].sum(source.getValue(i, j));
                 }
             }
-            return result;
         }
         else {
             throw new DifferentShape("Different shape of matrixes");
         }
     }
 
-    public static ComplexMatrix sub(ComplexMatrix first, ComplexMatrix second) throws DifferentShape {
-        if (first.getRows() == second.getRows() && first.getCols() == second.getCols()) {
-            ComplexMatrix result = new ComplexMatrix(first.getRows(), second.getCols());
-            for (int i = 0; i < result.getRows(); i++) {
-                for (int j = 0; j < result.getCols(); j++) {
-                    result.matrix[i][j] = ComplexNumber.sub(first.getValue(i, j), second.getValue(i, j));
+    public void sub(ComplexMatrix source) throws DifferentShape {
+        if (this.getRows() == source.getRows() && this.getCols() == source.getCols()) {
+            for (int i = 0; i < source.getRows(); i++) {
+                for (int j = 0; j < source.getCols(); j++) {
+                    source.matrix[i][j].sub(source.getValue(i, j));
                 }
             }
-            return result;
         }
         else {
             throw new DifferentShape("Different shape of matrixes");
         }
     }
 
-    public static ComplexMatrix mul(ComplexMatrix first, ComplexMatrix second) throws DifferentShape {
-        if (first.getCols() == second.getRows()) {
-            ComplexMatrix result = new ComplexMatrix(first.getRows(), second.getCols());
+    public void mul(ComplexMatrix source) throws DifferentShape {
+        if (this.getCols() == source.getRows()) {
             ComplexNumber tmp;
-            for (int i = 0; i < first.getRows(); i++) {
-                for (int j = 0; j < second.getCols(); j++) {
+            for (int i = 0; i < source.getRows(); i++) {
+                for (int j = 0; j < source.getCols(); j++) {
                     tmp = new ComplexNumber(0);
-                    for (int k = 0; k < second.getRows(); k++) {
-                        tmp = ComplexNumber.sum(tmp,
-                                ComplexNumber.mul(first.getValue(i, k), second.getValue(k, j)));
+                    for (int k = 0; k < source.getRows(); k++) {
+                        ComplexNumber tmp2 = new ComplexNumber(this.getValue(i, k).getRn(), this.getValue(i, k).getIu());
+                        tmp2.mul(source.getValue(k, j));
+                        tmp.sum(tmp2);
                     }
-                    result.matrix[i][j] = tmp;
+                    this.matrix[i][j] = tmp;
                 }
             }
-            return result;
         }
         else {
             throw new DifferentShape("Different shape of matrix");
         }
     }
 
-    private static void split(ComplexNumber[][] matrix, ComplexNumber[][] tmp,
+    private void split(ComplexNumber[][] matrix, ComplexNumber[][] tmp,
                               int row, int col, int shape) {
         int i = 0;
         int j = 0;
@@ -127,22 +134,24 @@ public class ComplexMatrix {
         }
     }
 
-    public static ComplexNumber determinant(ComplexMatrix source) throws DifferentShape {
-        if (source.getRows() == source.getCols()) {
-            if (source.getRows() == 1) {
-                return source.getValue(0, 0);
+    public ComplexNumber determinant() throws DifferentShape {
+        if (this.getRows() == this.getCols()) {
+            if (this.getRows() == 1) {
+                return this.getValue(0, 0);
             }
 
             ComplexNumber result = new ComplexNumber(0);
             ComplexNumber sign = new ComplexNumber(1);
-            int n = source.getRows();;
+            int n = this.getRows();;
 
             for (int i = 0; i < n; i++) {
                 ComplexNumber[][] tmp = new ComplexNumber[n - 1][n - 1];
-                split(source.matrix, tmp, 0, i, n);
-                ComplexNumber q = ComplexNumber.mul(sign, source.getValue(0, i));
-                result = ComplexNumber.sum(result, ComplexNumber.mul(q, determinant(new ComplexMatrix(tmp))));
-                sign = ComplexNumber.sub(sign, ComplexNumber.mul(new ComplexNumber(2), sign));
+                split(this.matrix, tmp, 0, i, n);
+                ComplexNumber q = new ComplexNumber(1);
+                q.mul(this.getValue(0, i));
+                q.mul(new ComplexMatrix(tmp).determinant());
+                result.sum(q);
+                sign.mul(new ComplexNumber(-1));
             }
             return result;
         }
@@ -151,37 +160,15 @@ public class ComplexMatrix {
         }
     }
 
-    public static ComplexMatrix transpose(ComplexMatrix source) {
-        ComplexMatrix result = new ComplexMatrix(source.getCols(), source.getRows());
-        for (int i = 0; i < source.getRows(); i++) {
-            for (int j = 0; j < source.getCols(); j++) {
-                result.matrix[j][i] = new ComplexNumber(source.getValue(i, j).getRn(),
-                        source.getValue(i, j).getIu());
+    public ComplexMatrix transpose() {
+        ComplexMatrix result = new ComplexMatrix(this.getCols(), this.getRows());
+        for (int i = 0; i < this.getRows(); i++) {
+            for (int j = 0; j < this.getCols(); j++) {
+                result.matrix[j][i] = new ComplexNumber(this.getValue(i, j).getRn(),
+                        this.getValue(i, j).getIu());
             }
         }
         return result;
-    }
-
-    public static void main(String[] args) throws Matrix.DifferentShape {
-        try {
-            ComplexNumber[][] a = new ComplexNumber[2][2];
-            a[0][0] = new ComplexNumber(3, 2);
-            a[0][1] = new ComplexNumber(1, 1);
-            a[1][0] = new ComplexNumber(3, 0);
-            a[1][1] = new ComplexNumber(4, 2);
-
-            ComplexMatrix b = new ComplexMatrix(a);
-            b.printMatrix();
-            ComplexMatrix c = ComplexMatrix.transpose(b);
-            c.printMatrix();
-            ComplexNumber x = ComplexMatrix.determinant(c);
-            ComplexNumber y = ComplexMatrix.determinant(b);
-            System.out.println("\n" + x.algebraic() + "  " + y.algebraic());
-
-        }
-        catch (Exception exc) {
-            System.out.println(exc.getMessage());
-        }
     }
 
     public static class DifferentShape extends Exception {
