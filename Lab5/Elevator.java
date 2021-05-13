@@ -12,11 +12,6 @@ public class Elevator {
 
     public void move() {
         this.setCurFloor(this.getCurFloor() + this.getDirection());
-        for (Passenger passenger : passengers) {
-            if (passenger.getDestFloor() == this.getCurFloor()) {
-                this.removePassenger(passenger);
-            }
-        }
     }
 
     public void setCurFloor(int floor) {
