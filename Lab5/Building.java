@@ -14,16 +14,14 @@ public class Building extends Thread {
 
     @Override
     public void run() {
-
-
         while (true) {
             Random random = new Random();
-            int from = random.nextInt(this.getNumFloors() + 1);
+            int from = random.nextInt(this.getNumFloors());
             int people = random.nextInt(maxPeople + 1);
             for (int i = 0; i < people; i++) {
-                int to = random.nextInt(this.getNumFloors() + 1);
+                int to = random.nextInt(this.getNumFloors());
                 while (to == from) {
-                    to = random.nextInt(this.getNumFloors() + 1);
+                    to = random.nextInt(this.getNumFloors());
                 }
 
                 int dir = to - from;
@@ -36,7 +34,10 @@ public class Building extends Thread {
 
                 Request req = new Request(from, dir);
                 Passenger pas = new Passenger(from, to, req);
-                this.getController().addPassenger(pas);
+
+                if (this.getController().getPassengers().size() < this.getNumFloors()) {
+                    this.getController().addPassenger(pas);
+                }
             }
             try {
                 Thread.sleep(2000);
