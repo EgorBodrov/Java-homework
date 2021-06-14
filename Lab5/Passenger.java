@@ -1,4 +1,4 @@
-package com.company;
+package sample;
 
 public class Passenger {
     private int curFloor;

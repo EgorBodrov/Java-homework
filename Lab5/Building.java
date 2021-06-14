@@ -1,12 +1,12 @@
-package com.company;
+package sample;
 import java.util.Random;
 
 public class Building extends Thread {
     private int maxPeople;
     private int numFloors;
-    private Controller controller;
+    private ElevatorController controller;
 
-    Building(int maxPeople, int floors, Controller ctrl) {
+    Building(int maxPeople, int floors, ElevatorController ctrl) {
         this.setMaxPeople(maxPeople);
         this.setController(ctrl);
         this.setNumFloors(floors);
@@ -17,7 +17,7 @@ public class Building extends Thread {
         while (true) {
             Random random = new Random();
             int from = random.nextInt(this.getNumFloors());
-            int people = random.nextInt(maxPeople + 1);
+            int people = random.nextInt(maxPeople) + 1;
             for (int i = 0; i < people; i++) {
                 int to = random.nextInt(this.getNumFloors());
                 while (to == from) {
@@ -40,14 +40,14 @@ public class Building extends Thread {
                 }
             }
             try {
-                Thread.sleep(2000);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 System.out.println(ex.getMessage());
             }
         }
     }
 
-    public void setController(Controller ctrl) {
+    public void setController(ElevatorController ctrl) {
         this.controller = ctrl;
     }
 
@@ -68,7 +68,7 @@ public class Building extends Thread {
         return this.numFloors;
     }
 
-    public Controller getController() {
+    public ElevatorController getController() {
         return this.controller;
     }
 }
